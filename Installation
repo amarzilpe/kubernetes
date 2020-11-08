@@ -36,15 +36,15 @@ systemctl enable kubelet && systemctl start kubelet
 
 #For centos or RHEL
 cat <<EOF > /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables=1
+net.bridge.bridge-nf-call-iptables=1
 EOF
 
 #For kernal parameter update
-sysctl net.bridge.bridge-nf-call-iptables = 1
+sysctl net.bridge.bridge-nf-call-iptables=1
 sysctl net.ipv4.ip_forword=1
 sysctl --system
-echo "1" > /proc/sys/net/ipv4/ip_forword
+echo "1" > /proc/sys/net/ipv4/ip_forward
 systemctl daemon-reload
 systemctl restart kubelet
 
