@@ -1,0 +1,6 @@
+1. add worker nodes k8s cluster
+2. create alb aws ingress.
+3. HPA, VPA, CA, NA
+4. HTTPS/HTTP
+5. Volumes demo
+6. 

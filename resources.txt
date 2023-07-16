@@ -1,0 +1,12 @@
+https://developer.okta.com/blog/2022/06/22/terraform-eks-microservices
+
+https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
+https://docs.aws.amazon.com/eks/latest/userguide/worker.html
+https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html
+
+# Deploy eks closter with autoscaling group
+https://aws.amazon.com/getting-started/hands-on/deploy-kubernetes-app-amazon-eks/
+
+
+
+https://docs.aws.amazon.com/eks/latest/userguide/pod-configuration.html

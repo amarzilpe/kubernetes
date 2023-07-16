@@ -1,0 +1,104 @@
+Prerequisite:
+	1. eksctl
+	2. kubectl
+	3. IAM USER
+To create an Amazon EKS cluster
+If you already have a cluster IAM role, or you're going to create your cluster with eksctl, then you can skip this step. By default, eksctl creates a role for you.
+
+To create an Amazon EKS cluster IAM role
+-> Run the following command to create an IAM trust policy JSON file.
+cat >eks-cluster-role-trust-policy.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+
+# aws iam create-role --role-name myAmazonEKSClusterRole --assume-role-policy-document file://"eks-cluster-role-trust-policy.json"
+# aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy --role-name myAmazonEKSClusterRole
+
+Create cluster with no worker node group:
+    # eksctl create cluster --name codi-cluster-01 --region ap-south-1 --without-nodegroup
+
+Creating a managed node group
+# eksctl create iamserviceaccount \
+    --name aws-node  \
+    --namespace kube-system  \
+    --cluster codi-cluster-01 \
+    --role-name AmazonEKSVPCCNIRole \     
+    --attach-policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy \
+    --override-existing-serviceaccounts --approve
+Link: https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
+
+# eksctl utils associate-iam-oidc-provider --region=ap-south-1 --cluster=codi-cluster-01
+
+Creating an IAM OIDC provider for your cluster
+aws link: https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
+Link: https://www.youtube.com/watch?v=bu0M2y2g1m8
+
+Configuring a Kubernetes service account to assume an IAM role
+Link: https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
+
+cat >eks-service.json <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::eksctl-service"
+        }
+    ]
+}
+EOF
+
+# aws iam create-policy --policy-name eks-service --policy-document file://eks-service.json
+
+# eksctl create iamserviceaccount --name eks-service-ac --namespace default --cluster codi-cluster-01 --role-name eks-service-role \
+    --attach-policy-arn arn:aws:iam::354009861780:policy/eks-service --approve
+Note: Verify role created from aws console
+
+Verify Role and policy
+# aws iam get-role --role-name eks-service-role --query Role.AssumeRolePolicyDocument
+# aws iam list-attached-role-policies --role-name eks-service-role --query AttachedPolicies[].PolicyArn --output text
+
+Export the policy arn:
+# export policy_arn=arn:aws:iam::354009861780:policy/eks-service
+
+(Optional): Configuring Pods to use a Kubernetes service account (check later once the worker nodes are added)
+
+eksctl create nodegroup \
+  --cluster ckad-cluster \
+  --region ap-south-1 \
+  --name eks-node-gp \
+  --node-ami-family ubuntu2004 \
+  --node-type t3.medium \
+  --nodes 3 \
+  --nodes-min 2 \
+  --nodes-max 4 \
+  --ssh-access \
+  --ssh-public-key ansible-host
+  
+  *For autoscaling add --asg-access *
+
+### AutoScaler
+https://cast.ai/blog/eks-cluster-autoscaler-6-best-practices-for-effective-autoscaling/
+
+
+
+
+
+
+
+
+
+
+

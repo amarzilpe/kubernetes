@@ -1,0 +1,7 @@
+# kubectl create service clusterip service_name --clusterip=None -o yaml --dry-run=client
+# kubectl create deployment --image=nginx nginx --dry-run=client -o yaml
+# kubectl create ingress simple --rule=foo.com/bar=svc1:8080,tls=my-cert --dry-run=client -o yaml
+# kubectl create service nodeport mypod --tcp=80:80 --node-port=30001 --dry-run=client -o yaml
+# kubectl expose pod mypod --port=80 --name mypod-service --type=NodePort --dry-run=client -o yaml
+
+# URL: https://devopscube.com/create-kubernetes-yaml/
